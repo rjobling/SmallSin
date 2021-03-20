@@ -50,10 +50,6 @@ int main()
 	: [table] "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
 	);
 
-	// Print out comma separated values.
-	KPrintF("Jobbo, Dan\n");
-	for (int i = 0; i < TABLE_SIZE; i++)
-	{
-		KPrintF("%ld, %ld\n", JobboTable[i], DanTable[i]);
-	}
+	KPrintF("Jobbo\n");	for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", JobboTable[i]);
+	KPrintF("Dan\n");	for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", DanTable[i]);
 }
