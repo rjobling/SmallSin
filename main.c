@@ -6,6 +6,7 @@ struct ExecBase* SysBase;
 
 short JobboTable[TABLE_SIZE];
 short DanTable[TABLE_SIZE];
+short ABTable[TABLE_SIZE];
 
 int main()
 {
@@ -50,6 +51,25 @@ int main()
 	: "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
 	);
 
+	// A/B
+	table = ABTable;
+	asm volatile(
+	"		moveq	#0,%%d0				\n"
+	"		move.w	#512,%%d1			\n"
+	"Loop3%=:							\n"
+	"		move.w	%%d0,%%d2			\n"
+	"		muls.w	%%d1,%%d2			\n"
+	"		asr.l	#2,%%d2				\n"
+	"		move.w	%%d2,(%%a0)+		\n"
+	"		neg.w	%%d2				\n"
+	"		move.w	%%d2,(1024-2,%%a0)	\n"
+	"		addq.w	#1,%%d0				\n"
+	"		subq.w	#1,%%d1				\n"
+	"		bgt.b	Loop3%=				\n"
+	: "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
+	);
+
 	KPrintF("Jobbo\n");	for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", JobboTable[i]);
 	KPrintF("Dan\n");	for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", DanTable[i]);
+	KPrintF("A/B\n");	for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", ABTable[i]);
 }
