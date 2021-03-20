@@ -27,7 +27,7 @@ int main()
 	"		move.w	%%d1,(%%a0)+		\n"
 	"		add.w	#128,%%d0			\n"
 	"		bne.s	.loop%=				\n"
-	: [table] "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
+	: "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
 	);
 
 	// Dan
@@ -47,7 +47,7 @@ int main()
 	"		add.w	%%d2,%%d0		\n"
 	"		sub.w	%%d2,%%d1		\n"
 	"		bgt.s	.loop%=			\n"
-	: [table] "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
+	: "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
 	);
 
 	KPrintF("Jobbo\n");	for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", JobboTable[i]);
