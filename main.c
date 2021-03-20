@@ -61,7 +61,7 @@ int main()
 	"		bgt.s	.loop%=					\n"
 	".end%=:								\n"
 	"		move.l	#.end%=-.start%=,%%d7	\n"
-	: "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
+	: "+a" (table) : "d" (size) : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
 	);
 	DanSize = size;
 
@@ -83,7 +83,7 @@ int main()
 	"		bgt.b	Loop3%=					\n"
 	".end%=:								\n"
 	"		move.l	#.end%=-.start%=,%%d7	\n"
-	: "+a" (table) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
+	: "+a" (table) : "d" (size) : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
 	);
 	ABSize = size;
 
