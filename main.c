@@ -13,6 +13,9 @@ short DanTable[TABLE_SIZE];
 int ABSize;
 short ABTable[TABLE_SIZE];
 
+int AB2Size;
+short AB2Table[TABLE_SIZE];
+
 int main()
 {
 	SysBase = *((struct ExecBase**) 4UL);
@@ -87,7 +90,29 @@ int main()
 	);
 	ABSize = size;
 
+	// A/B 2
+	table = AB2Table;
+	asm volatile(
+	".start%=:								\n"
+	"		moveq	#0,%%d0					\n"
+	"		lea	(511+2).w,%%a1				\n"
+	"Loop4%=:								\n"
+	"		subq.l	#2,%%a1					\n"
+	"		move.l	%%d0,%%d2				\n"
+	"		asr.l	#2,%%d2					\n"
+	"		move.w	%%d2,(%%a0)+			\n"
+	"		neg.w	%%d2					\n"
+	"		move.w	%%d2,(1024-2,%%a0)		\n"
+	"		add.l	%%a1,%%d0				\n"
+	"		bne.b	Loop4%=					\n"
+	".end%=:								\n"
+	"		move.l	#.end%=-.start%=,%%d7	\n"
+	: "+a" (table) : "d" (size) : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
+	);
+	AB2Size = size;
+
 	KPrintF("Jobbo (%ld bytes)\n", JobboSize); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", JobboTable[i]);
 	KPrintF("Dan (%ld bytes)\n"  , DanSize  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", DanTable[i]  );
 	KPrintF("A/B (%ld bytes)\n"  , ABSize   ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", ABTable[i]   );
+	KPrintF("A/B 2(%ld bytes)\n" , AB2Size  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", AB2Table[i]  );
 }
