@@ -20,7 +20,7 @@ objects := $(cpp_objects) $(c_objects) $(s_objects)
 OUT = a.mingw
 CC = m68k-amiga-elf-gcc
 
-CCFLAGS = -g -MP -MMD -m68000 -Og -nostdlib -Wextra -Wno-unused-function -Wno-volatile-register-var -fomit-frame-pointer -fno-tree-loop-distribution -flto -fwhole-program -fno-exceptions
+CCFLAGS = -g -MP -MMD -m68000 -Ofast -nostdlib -Wextra -Wno-unused-function -Wno-volatile-register-var -fomit-frame-pointer -fno-tree-loop-distribution -flto -fwhole-program -fno-exceptions
 CPPFLAGS= $(CCFLAGS) -fno-rtti -fcoroutines -fno-use-cxa-atexit
 ASFLAGS = -Wa,-g,--register-prefix-optional
 LDFLAGS = -Wl,--emit-relocs,-Ttext=0,-Map=$(OUT).map
