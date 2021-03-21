@@ -10,17 +10,20 @@ short JobboTable[TABLE_SIZE];
 short DanSize;
 short DanTable[TABLE_SIZE];
 
+short Dan2Size;
+short Dan2Table[TABLE_SIZE];
+
 short ABSize;
 short ABTable[TABLE_SIZE];
 
 short AB2Size;
 short AB2Table[TABLE_SIZE];
 
+short AB3Size;
+short AB3Table[TABLE_SIZE];
+
 short RossSize;
 short RossTable[TABLE_SIZE];
-
-short Dan2Size;
-short Dan2Table[TABLE_SIZE];
 
 int main()
 {
@@ -74,6 +77,42 @@ int main()
 	);
 	DanSize = size;
 
+	/* Overflows the table and causes problems.
+	// Dan 2
+	table = Dan2Table;
+	asm volatile(
+			// Entry a0 = Beginning of 2048 byte sine table buffer
+	"start%=:							\n"
+	"		lea		512(%%a0),%%a0		\n"	// a0 = 2nd Quadrant Start
+	"		lea		2(%%a0),%%a1		\n"	// a1 = 1st Quadrant End + 2
+	"		moveq	#11,%%d0			\n"	// d0.l = x = 11
+	"		moveq	#1,%%d1				\n"
+	"		ror.w	#2,%%d1				\n"	// d1.l = y = 16384
+	"		move.w	#163,%%d2			\n"	// d2 = Q = magic division value = 512/PI (162.97466)
+	"loop%=:							\n"
+	"		move.l	%%d1,%%d3			\n"
+	"		divu	%%d2,%%d3			\n"
+	"		add.w	%%d3,%%d0			\n"	// x = x + (y / Q)
+	"		move.l	%%d0,%%d3			\n"
+	"		divu	%%d2,%%d3			\n"
+	"		sub.w	%%d3,%%d1			\n"	// y = y - (x / Q)
+	"		move.w	%%d1,%%d3			\n"
+	"		neg.w	%%d3				\n"
+	"		move.w	%%d3,1024(%%a0)		\n"	// write 4th Quadrant
+	"		move.w	%%d3,1022(%%a1)		\n"	// write 3rd Quadrant
+	"		move.w	%%d1,(%%a0)+		\n"	// Write 2nd Quadrant
+	"		move.w	%%d1,-(%%a1)		\n"	// Write 1st Quadrant
+	"		addq.w	#1,%%d3				\n"
+	"		blt.s	loop%=				\n"
+	"		clr.w	(%%a1)				\n"	// Set SinTable index 0 to 0
+	"		clr.w	-(%%a0)				\n"	// Set SinTable index 512 to 0
+	"end%=:								\n"
+	"		move.w	#end%=-start%=,%%d7	\n"
+	: "+a" (table), "=d" (size) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
+	);
+	Dan2Size = size;
+	*/
+
 	// A/B
 	table = ABTable;
 	asm volatile(
@@ -117,6 +156,35 @@ int main()
 	);
 	AB2Size = size;
 
+	// A/B 3
+	table = AB3Table;
+	asm volatile(
+	"start%=:							\n"
+	"		moveq	#0,%%d0				\n"
+	"		move.w	#511+2,%%a1			\n"
+	"loop%=:							\n"
+	"		subq.l	#2,%%a1				\n"
+	"		move.l	%%d0,%%d1			\n"
+	// extra accuracy begin
+	"		move.w	%%d1,%%d2			\n"
+	"		not.w	%%d2				\n"
+	"		mulu.w	%%d1,%%d2			\n"
+	"		divu.w	#75781/2,%%d2		\n"
+	"		lsr.w	#3,%%d2				\n"
+	"		sub.w	%%d2,%%d1			\n"
+	// extra accuracy end
+	"		asr.l	#2,%%d1				\n"
+	"		move.w	%%d1,(%%a0)+		\n"
+	"		neg.w	%%d1				\n"
+	"		move.w	%%d1,(1024-2,%%a0)	\n"
+	"		add.l	%%a1,%%d0			\n"
+	"		bne.b	loop%=				\n"
+	"end%=:								\n"
+	"		move.w	#end%=-start%=,%%d7	\n"
+	: "+a" (table), "=d" (size) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
+	);
+	AB3Size = size;
+
 	// Ross
 	table = RossTable;
 	asm volatile(
@@ -147,44 +215,11 @@ int main()
 	);
 	RossSize = size;
 
-	// Dan 2
-	//table = Dan2Table;
-	//asm volatile(
-	//		// Entry a0 = Beginning of 2048 byte sine table buffer
-	//"start%=:							\n"
-	//"		lea		512(%%a0),%%a0		\n"	// a0 = 2nd Quadrant Start
-	//"		lea		2(%%a0),%%a1		\n"	// a1 = 1st Quadrant End + 2
-	//"		moveq	#11,%%d0			\n"	// d0.l = x = 11
-	//"		moveq	#1,%%d1				\n"
-	//"		ror.w	#2,%%d1				\n"	// d1.l = y = 16384
-	//"		move.w	#163,%%d2			\n"	// d2 = Q = magic division value = 512/PI (162.97466)
-	//"loop%=:							\n"
-	//"		move.l	%%d1,%%d3			\n"
-	//"		divu	%%d2,%%d3			\n"
-	//"		add.w	%%d3,%%d0			\n"	// x = x + (y / Q)
-	//"		move.l	%%d0,%%d3			\n"
-	//"		divu	%%d2,%%d3			\n"
-	//"		sub.w	%%d3,%%d1			\n"	// y = y - (x / Q)
-	//"		move.w	%%d1,%%d3			\n"
-	//"		neg.w	%%d3				\n"
-	//"		move.w	%%d3,1024(%%a0)		\n"	// write 4th Quadrant
-	//"		move.w	%%d3,1022(%%a1)		\n"	// write 3rd Quadrant
-	//"		move.w	%%d1,(%%a0)+		\n"	// Write 2nd Quadrant
-	//"		move.w	%%d1,-(%%a1)		\n"	// Write 1st Quadrant
-	//"		addq.w	#1,%%d3				\n"
-	//"		blt.s	loop%=				\n"
-	//"		clr.w	(%%a1)				\n"	// Set SinTable index 0 to 0
-	//"		clr.w	-(%%a0)				\n"	// Set SinTable index 512 to 0
-	//"end%=:								\n"
-	//"		move.w	#end%=-start%=,%%d7	\n"
-	//: "+a" (table), "=d" (size) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "a1", "a2", "a3", "a4", "a6", "cc", "memory"
-	//);
-	//Dan2Size = size;
-
-	KPrintF("Jobbo (%ld bytes)\n", JobboSize); //for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", JobboTable[i]);
-	KPrintF("Dan (%ld bytes)\n"  , DanSize  ); //for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", DanTable[i]  );
-	KPrintF("A/B (%ld bytes)\n"  , ABSize   ); //for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", ABTable[i]   );
-	KPrintF("A/B 2 (%ld bytes)\n", AB2Size  ); //for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", AB2Table[i]  );
-	KPrintF("Ross (%ld bytes)\n" , RossSize ); //for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", RossTable[i] );
-	//KPrintF("Dan 2 (%ld bytes)\n", Dan2Size ); //for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", Dan2Table[i] );
+	KPrintF("Jobbo (%ld bytes)\n", JobboSize); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", JobboTable[i]);
+	KPrintF("Dan (%ld bytes)\n"  , DanSize  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", DanTable[i]  );
+	//KPrintF("Dan 2 (%ld bytes)\n", Dan2Size ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", Dan2Table[i] );
+	KPrintF("A/B (%ld bytes)\n"  , ABSize   ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", ABTable[i]   );
+	KPrintF("A/B 2 (%ld bytes)\n", AB2Size  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", AB2Table[i]  );
+	KPrintF("A/B 3 (%ld bytes)\n", AB3Size  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", AB3Table[i]  );
+	KPrintF("Ross (%ld bytes)\n" , RossSize ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", RossTable[i] );
 }
