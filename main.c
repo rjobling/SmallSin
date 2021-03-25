@@ -151,7 +151,7 @@ int main()
 	asm volatile(
 	"start%=:							\n"
 	"		moveq	#0,%%d0				\n"
-	"		lea	(511+2).w,%%a1			\n"
+	"		move.w	#511+2,%%a1			\n"
 	"loop%=:							\n"
 	"		subq.l	#2,%%a1				\n"
 	"		move.l	%%d0,%%d2			\n"
@@ -225,11 +225,11 @@ int main()
 	);
 	RossSize = size;
 
-	KPrintF("Jobbo (%ld bytes)\n"  , JobboSize ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", JobboTable[i] );
+//	KPrintF("Jobbo (%ld bytes)\n"  , JobboSize ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", JobboTable[i] );
 	KPrintF("Jobbo 2 (%ld bytes)\n", Jobbo2Size); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", Jobbo2Table[i]);
-	KPrintF("Dan (%ld bytes)\n"    , DanSize   ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", DanTable[i]   );
-	KPrintF("Dan 2 (%ld bytes)\n"  , Dan2Size  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", Dan2Table[i]  );
-	KPrintF("A/B 2 (%ld bytes)\n"  , AB2Size   ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", AB2Table[i]   );
-	KPrintF("A/B 3 (%ld bytes)\n"  , AB3Size   ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", AB3Table[i]   );
-	KPrintF("Ross (%ld bytes)\n"   , RossSize  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", RossTable[i]  );
+//	KPrintF("Dan (%ld bytes)\n"    , DanSize   ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", DanTable[i]   );
+//	KPrintF("Dan 2 (%ld bytes)\n"  , Dan2Size  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", Dan2Table[i]  );
+//	KPrintF("A/B 2 (%ld bytes)\n"  , AB2Size   ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", AB2Table[i]   );
+//	KPrintF("A/B 3 (%ld bytes)\n"  , AB3Size   ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", AB3Table[i]   );
+//	KPrintF("Ross (%ld bytes)\n"   , RossSize  ); for (int i = 0; i < TABLE_SIZE; i++) KPrintF("%ld\n", RossTable[i]  );
 }
